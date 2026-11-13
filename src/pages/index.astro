@@ -10,14 +10,14 @@ const cats = ["전체", "맛집", "카페", "숙소", "가볼 곳"];
 const OWNER_AFTER = 3; // 몇 번째 카드 뒤에 '사장님이신가요?' 띠를 넣을지
 ---
 
-<Layout title="플레이강릉 | 오직 강릉만 소개합니다">
+<Layout title="플레이강릉 | 오직! 강릉">
   <Header />
   <main id="main-content" class="app-layout my-1 pb-10">
     <section class="pg-col pt-6 pb-4">
-      <h1 class="font-title text-3xl sm:text-4xl" style="font-weight:900;color:var(--accent)">
-        오직 강릉만 소개합니다
+      <h1 class="font-title text-3xl sm:text-4xl" style="font-weight:700;color:var(--accent);text-align:center">
+        오직! 강릉
       </h1>
-      <p class="text-muted-foreground mt-2 text-sm" id="order-note">강릉의 가게와 가볼 곳</p>
+      <p class="text-muted-foreground mt-2 text-sm" style="text-align:center" id="order-note">강릉의 가게와 가볼 곳</p>
     </section>
 
     <nav class="pg-cats" aria-label="분류">
@@ -70,8 +70,8 @@ const OWNER_AFTER = 3; // 몇 번째 카드 뒤에 '사장님이신가요?' 띠�
 </Layout>
 
 <style is:global>
-  .pg-cats { display:flex; gap:8px; overflow-x:auto; padding:4px 0 14px; }
-  .pg-cats button { flex:none; padding:8px 16px; border-radius:999px; border:1px solid var(--border); background:var(--background); font-size:15px; cursor:pointer; }
+  .pg-cats { display:flex; justify-content:center; justify-content:safe center; gap:6px; overflow-x:auto; padding:4px 0 14px; }
+  .pg-cats button { flex:none; padding:7px 13px; border-radius:999px; border:1px solid var(--border); background:#fff; font-size:14px; cursor:pointer; }
   .pg-cats button.on { background:var(--accent); color:#fff; border-color:var(--accent); font-weight:700; }
   .pg-ask { border:2px solid var(--accent); border-radius:16px; padding:16px 18px; margin-bottom:16px; }
   .pg-ask p { font-size:14px; margin:6px 0 12px; color:var(--muted-foreground); }
@@ -88,7 +88,7 @@ const OWNER_AFTER = 3; // 몇 번째 카드 뒤에 '사장님이신가요?' 띠�
   .pg-feed { gap:22px; }
   .pg-media { aspect-ratio:4/3; display:flex; align-items:center; justify-content:center;
     background:linear-gradient(135deg,#014d86,#3a86c8 60%,#fdf6ec); color:#fff; }
-  .pg-media span { font-family:'SeoulNotice',sans-serif; font-weight:900; font-size:28px; text-shadow:0 2px 8px rgba(0,0,0,.35); }
+  .pg-media span { font-family:'SeoulNotice',sans-serif; font-weight:700; font-size:28px; text-shadow:0 2px 8px rgba(0,0,0,.35); }
   .pg-body { padding:14px 16px 16px; }
   .pg-meta { display:flex; gap:8px; align-items:center; font-size:13px; color:var(--muted-foreground); }
   .pg-tag { background:#d0161c; color:#fff; padding:2px 8px; border-radius:6px; font-weight:700; }
