@@ -44,20 +44,22 @@ function shops_() {
 
 function shopOf_(code) {
   if (!code) return null;
-  const local = shops_()[code];
-  if (local) return local;
   const server = prop_('SERVER'), key = prop_('INTAKE_KEY');
-  if (!server || !key) return null;
-  const cache = CacheService.getScriptCache(); const hit = cache.get('shop:' + code);
-  if (hit) return JSON.parse(hit);
-  try {
-    const r = UrlFetchApp.fetch(server + '/api/pg/shop-check?code=' + encodeURIComponent(code) + '&key=' + encodeURIComponent(key), { muteHttpExceptions: true });
-    const j = JSON.parse(r.getContentText());
-    if (!j.ok) return null;
-    const shop = { name: j.name, owner: j.owner, code: code };
-    cache.put('shop:' + code, JSON.stringify(shop), 600);
-    return shop;
-  } catch (e) { return null; }
+  if (server && key) {
+    const cache = CacheService.getScriptCache(); const hit = cache.get('shop:' + code);
+    if (hit) return JSON.parse(hit);
+    try {
+      const r = UrlFetchApp.fetch(server + '/api/pg/shop-check?code=' + encodeURIComponent(code) + '&key=' + encodeURIComponent(key), { muteHttpExceptions: true });
+      const j = JSON.parse(r.getContentText());
+      if (j.ok) {
+        const shop = { name: j.name, owner: j.owner, code: code };
+        cache.put('shop:' + code, JSON.stringify(shop), 600);
+        return shop;
+      }
+    } catch (e) { /* 서버가 안 되면 예비 목록 */ }
+  }
+  const local = shops_()[code];
+  return local ? Object.assign({ code: code }, local) : null;
 }
 
 function child_(parent, name) {
@@ -145,4 +147,11 @@ function setup() {
   shopFolder_(s['dwh2611']);
   UrlFetchApp.fetch('https://www.googleapis.com', { muteHttpExceptions: true }); // 외부 연결 권한도 함께 승인받기
   Logger.log(JSON.stringify(s));
+}
+
+/** 관리자 연동: 관리자 설정 화면의 '자료 받는 곳 열쇠'를 KEY 에 넣고 한 번 실행 */
+function linkServer() {
+  const KEY = 'PASTE_INTAKE_KEY';
+  PropertiesService.getScriptProperties().setProperties({ SERVER: 'https://admin.playgangneung.com', INTAKE_KEY: KEY });
+  Logger.log('연동 완료');
 }
