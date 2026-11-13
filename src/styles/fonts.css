@@ -1,0 +1,9 @@
+/* 본문: 나눔스퀘어 네오(네이버, 무료·웹 사용 가능) / 제목·강조: 서울알림체(서울시, 무료·웹 사용 가능) */
+@font-face { font-family: 'NanumSquareNeo'; src: url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-bRg.woff2) format('woff2'); font-weight: 400; font-display: swap; }
+@font-face { font-family: 'NanumSquareNeo'; src: url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-cBd.woff2) format('woff2'); font-weight: 700; font-display: swap; }
+@font-face { font-family: 'NanumSquareNeo'; src: url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-dEb.woff2) format('woff2'); font-weight: 800; font-display: swap; }
+@font-face { font-family: 'SeoulNotice'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2505-1@1.0/SeoulAlrimTTF-Bold.woff2') format('woff2'); font-weight: 700; font-display: swap; }
+@font-face { font-family: 'SeoulNotice'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2505-1@1.0/SeoulAlrimTTF-ExtraBold.woff2') format('woff2'); font-weight: 800; font-display: swap; }
+@font-face { font-family: 'SeoulNotice'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2505-1@1.0/SeoulAlrimTTF-Heavy.woff2') format('woff2'); font-weight: 900; font-display: swap; }
+
+h1, h2, h3, strong, .font-title { font-family: 'SeoulNotice', 'NanumSquareNeo', sans-serif; }
