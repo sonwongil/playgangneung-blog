@@ -1,7 +1,7 @@
 import type { UIStrings } from "../types";
 
 export default {
-  nav: { home: "홈", posts: "글 목록", tags: "태그", about: "소개", archives: "모아보기", search: "검색" },
+  nav: { home: "홈", posts: "블로그", tags: "태그", about: "소개", archives: "모아보기", search: "검색" },
   post: {
     publishedAt: "작성일", updatedAt: "수정일", sharePostIntro: "이 글 공유하기:",
     sharePostOn: "{{platform}}에 공유", sharePostViaEmail: "메일로 공유", tagLabel: "태그",
@@ -14,7 +14,7 @@ export default {
   pages: {
     tagTitle: "태그", tagDesc: "이 태그가 붙은 글",
     tagsTitle: "태그", tagsDesc: "글에 쓰인 모든 태그입니다.",
-    postsTitle: "글 목록", postsDesc: "플레이강릉의 모든 글입니다.",
+    postsTitle: "블로그", postsDesc: "플레이강릉의 모든 글입니다.",
     archivesTitle: "모아보기", archivesDesc: "날짜별로 모아 본 글입니다.",
     searchTitle: "검색", searchDesc: "찾고 싶은 곳이나 메뉴를 검색해 보세요.",
   },
