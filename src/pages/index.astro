@@ -13,7 +13,7 @@ const OWNER_AFTER = 3; // 몇 번째 카드 뒤에 '사장님이신가요?' 띠�
 <Layout title="플레이강릉 | 오직 강릉만 소개합니다">
   <Header />
   <main id="main-content" class="app-layout my-1 pb-10">
-    <section class="pt-6 pb-4">
+    <section class="pg-col pt-6 pb-4">
       <h1 class="font-title text-3xl sm:text-4xl" style="font-weight:900;color:var(--accent)">
         오직 강릉만 소개합니다
       </h1>
@@ -79,7 +79,8 @@ const OWNER_AFTER = 3; // 몇 번째 카드 뒤에 '사장님이신가요?' 띠�
   .pg-btn { display:inline-block; padding:9px 16px; border-radius:10px; border:1px solid var(--border); font-size:14px; background:var(--background); cursor:pointer; text-decoration:none; }
   .pg-btn.main { background:var(--accent); color:#fff; border-color:var(--accent); font-weight:700; }
   .pg-feed { display:grid; gap:18px; grid-template-columns:1fr; }
-  @media (min-width:640px){ .pg-feed { grid-template-columns:1fr 1fr; } }
+  .pg-feed, .pg-ask, .pg-col, .pg-cats { max-width:600px; margin-left:auto; margin-right:auto; }
+  .pg-ask { margin-bottom:16px; }
   .pg-card { border:1px solid var(--border); border-radius:16px; overflow:hidden; background:var(--background); }
   .pg-media { aspect-ratio:4/3; display:flex; align-items:center; justify-content:center;
     background:linear-gradient(135deg,#014d86,#3a86c8 60%,#fdf6ec); color:#fff; }
