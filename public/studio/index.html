@@ -134,7 +134,7 @@ $('rec').onclick=async()=>{
     $('play').src=URL.createObjectURL(blob); $('play').classList.remove('hidden');
     if(sec<MIN){blob=null;msg('recmsg',`${sec.toFixed(1)}초로 짧습니다. 10초 이상 되도록 천천히 다시 읽어 주세요.`,'bad');}
     else if(peak<0.08){blob=null;msg('recmsg','소리가 너무 작게 녹음됐습니다. 휴대폰을 조금 더 가까이 대고 다시 녹음해 주세요.','bad');}
-    else msg('recmsg',`잘 녹음됐습니다 (${sec.toFixed(1)}초). 들어 보시고 마음에 안 드시면 다시 녹음하세요.`,'good');
+    else {voiceSec=sec.toFixed(1); msg('recmsg',`잘 녹음됐습니다 (${sec.toFixed(1)}초). 들어 보시고 마음에 안 드시면 다시 녹음하세요.`,'good');}
     check();
   };
   rec.start(); t0=performance.now();
@@ -180,10 +180,45 @@ $('addPhoto').onclick=()=>addSlot({kind:'photo'});
 function check(){$('send').disabled=!(blob&&slots.every(o=>!o.req||o.file)&&$('c1').checked&&$('c2').checked);}
 function msg(id,t,c){$(id).textContent=t;$(id).className='msg'+(c?' '+c:'');}
 
-$('send').onclick=()=>{
-  // 받는 서버(비즈펍) 연결 전: 지금은 보내지 않고 안내만 한다.
-  msg('sendmsg','시험 화면입니다. 받는 곳(서버) 연결 후 실제로 전송됩니다.','bad');
+// ── 보내기: 구글 드라이브 '플레이강릉/01_촬영원본/가게이름/' 으로 ──
+const API='https://script.google.com/macros/s/AKfycbwg13lnYXOYqJgMWF-jXnUqctoZQfSInuUu_42goIrSCI1JF9vPFpZdC0v_Jk_APPlM/exec';
+const CODE=new URLSearchParams(location.search).get('c')||'';
+const CHUNK=4*1024*1024; // 256KB의 배수여야 한다
+async function api(o){
+  const r=await fetch(API,{method:'POST',body:JSON.stringify({code:CODE,...o})});
+  const j=await r.json(); if(!j.ok)throw new Error(j.error||'오류'); return j;
+}
+function b64(buf){let s='';const a=new Uint8Array(buf);for(let i=0;i<a.length;i+=0x8000)s+=String.fromCharCode.apply(null,a.subarray(i,i+0x8000));return btoa(s);}
+function ext(f){const m=(f.name||'').match(/\.[a-z0-9]+$/i);if(m)return m[0].toLowerCase();
+  const t=f.type||'';return t.includes('mp4')?(t.startsWith('audio')?'.m4a':'.mp4'):t.includes('webm')?'.webm':t.includes('ogg')?'.ogg':t.includes('png')?'.png':t.includes('jpeg')?'.jpg':'';}
+async function upload(file,kind,name,onp){
+  const st=await api({action:'start',kind,name,mime:file.type,size:file.size});
+  for(let pos=0;pos<file.size;){
+    const part=file.slice(pos,pos+CHUNK);
+    const r=await api({action:'chunk',session:st.session,start:pos,total:file.size,mime:file.type,data:b64(await part.arrayBuffer())});
+    pos+=part.size; onp(part.size); if(r.done)break;
+  }
+}
+let voiceSec=0;
+$('send').onclick=async()=>{
+  if(!CODE){msg('sendmsg','가게 전용 주소로 들어오셔야 보낼 수 있습니다. 플레이강릉에서 보내 드린 주소를 눌러 주세요.','bad');return;}
+  const d=new Date(),z=n=>String(n).padStart(2,'0'); const stamp=`${d.getFullYear()}${z(d.getMonth()+1)}${z(d.getDate())}-${z(d.getHours())}${z(d.getMinutes())}`;
+  const jobs=[{file:blob,kind:'voice',name:`목소리_${stamp}${ext(blob)}`}];
+  let pn=0;
+  for(const o of slots){ if(!o.file)continue;
+    if(o.kind==='video') jobs.push({file:o.file,kind:'video',name:`${o.title.split(' · ')[0].replace(' ','')}_${o.title.split(' · ')[1]||''}_${stamp}${ext(o.file)}`});
+    else {pn++; const cap=(o.caption||'').trim()||(o.title.split(' · ')[1]||'사진');
+      jobs.push({file:o.file,kind:'photo',name:`사진${String(pn).padStart(2,'0')}_${cap}_${stamp}${ext(o.file)}`});}
+  }
+  const total=jobs.reduce((a,j)=>a+j.file.size,0); let done=0;
+  $('send').disabled=true;
+  try{
+    for(const j of jobs){ await upload(j.file,j.kind,j.name,n=>{done+=n;msg('sendmsg',`보내는 중… ${Math.round(done/total*100)}% (${j.name.split('_')[0]})`);}); }
+    await api({action:'done',owner:$('owner').value,pride:$('pride').value,script:$('script').textContent,voiceSec,c1:$('c1').checked,c2:$('c2').checked,files:jobs.map(j=>j.name)});
+    msg('sendmsg','다 보냈습니다. 감사합니다! 영상이 만들어지면 확인 연락을 드리겠습니다.','good');
+  }catch(e){ msg('sendmsg','보내다가 멈췄습니다: '+e.message+' — 잠시 뒤 다시 눌러 주세요.','bad'); $('send').disabled=false; }
 };
+if(CODE) api({action:'info'}).then(j=>{ $('shop').value=j.name; $('shop').readOnly=true; if(j.owner)$('owner').value=j.owner; makeScript(); }).catch(e=>msg('sendmsg',e.message,'bad'));
 </script>
 </body>
 </html>
