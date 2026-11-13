@@ -39,6 +39,17 @@
   .thumbs div{position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;background:#eee}
   .thumbs img,.thumbs video{width:100%;height:100%;object-fit:cover}
   .thumbs span{position:absolute;left:4px;bottom:4px;background:rgba(0,0,0,.6);color:#fff;font-size:11px;padding:1px 5px;border-radius:4px}
+  .slot{display:flex;gap:12px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:10px}
+  .slot .pv{width:76px;height:76px;flex:none;border-radius:10px;background:#eef2f5;border:2px dashed #c9d3db;display:flex;align-items:center;justify-content:center;font-size:26px;color:#9aa8b4;overflow:hidden;cursor:pointer}
+  .slot .pv.done{border:0}
+  .slot .pv img,.slot .pv video{width:100%;height:100%;object-fit:cover}
+  .slot .tx{flex:1;min-width:0}
+  .slot .tt{font-weight:700;font-size:15px}
+  .slot .gd{font-size:13px;color:#5a6773;margin:2px 0 6px}
+  .slot input[type=text]{padding:8px 10px;font-size:14px}
+  .slot .x{border:0;background:none;color:#9aa8b4;font-size:20px;cursor:pointer;flex:none}
+  .req{color:var(--red);font-size:12px;font-weight:700}
+  .btn.add{width:100%;border-style:dashed;color:var(--sea);font-weight:600}
   .agree{display:flex;gap:10px;align-items:flex-start;font-size:14px;margin:8px 0}
   .agree input{width:20px;height:20px;margin-top:2px;flex:none}
   .hidden{display:none}
@@ -78,11 +89,10 @@
 </section>
 
 <section class="card">
-  <h2><span class="n">3</span>사진·동영상 올리기</h2>
-  <p class="desc">가게 외관, 대표 메뉴, 내부, 조리 장면 등 많을수록 좋습니다. 가로·세로 모두 괜찮습니다.</p>
-  <div class="drop" id="drop">여기를 눌러 사진·동영상 고르기</div>
-  <input id="files" type="file" accept="image/*,video/*" multiple class="hidden">
-  <div class="thumbs" id="thumbs"></div>
+  <h2><span class="n">3</span>영상·사진 올리기</h2>
+  <p class="desc">칸마다 눌러서 찍거나 고르시면 됩니다. <b class="req">필수</b> 표시 칸은 꼭 채워 주세요.</p>
+  <div id="slots"></div>
+  <button class="btn add" id="addPhoto">＋ 사진 칸 추가</button>
 </section>
 
 <section class="card">
@@ -97,7 +107,7 @@
 <script>
 const $=id=>document.getElementById(id);
 const MIN=10, MAX=25;
-let blob=null, files=[];
+let blob=null;
 
 function makeScript(){
   const s=$('shop').value.trim()||'○○', o=$('owner').value.trim()||'○○○', p=$('pride').value.trim()||'정성을 다해 손님을 모십니다';
@@ -137,18 +147,37 @@ $('rec').onclick=async()=>{
   },80);
 };
 
-$('drop').onclick=()=>$('files').click();
-$('files').onchange=e=>{
-  for(const f of e.target.files){
-    files.push(f);
-    const d=document.createElement('div'), u=URL.createObjectURL(f);
-    d.innerHTML=f.type.startsWith('video')?`<video src="${u}" muted></video><span>동영상</span>`:`<img src="${u}">`;
-    $('thumbs').appendChild(d);
-  }
-  $('drop').textContent=`${files.length}개 골랐습니다 · 눌러서 더 추가`; check();
-};
+const slots=[];
+const SLOT_DEF=[
+  {kind:'video',title:'영상 1 · 인사 영상',guide:'카메라 앞에서 "안녕하세요, ○○ 사장 ○○○입니다" 하고 인사해 주세요. 5~10초면 충분합니다.',req:true,capture:'user'},
+  {kind:'video',title:'영상 2 · 가게 전경·주변',guide:'가게 간판과 외관, 주변 거리나 바다 등 가게 가는 길 풍경을 천천히 찍어 주세요.',req:true,capture:'environment'},
+  {kind:'photo',title:'사진 1 · 메뉴',req:true},
+  {kind:'photo',title:'사진 2 · 메뉴',req:false},
+];
+let photoNo=0;
+function addSlot(def){
+  if(def.kind==='photo'){photoNo++; def.title=def.title||`사진 ${photoNo}`;}
+  const o={...def,file:null}; slots.push(o);
+  const el=document.createElement('div'); el.className='slot';
+  const accept=o.kind==='video'?'video/*':'image/*';
+  el.innerHTML=`<div class="pv">${o.kind==='video'?'🎥':'📷'}</div>
+    <div class="tx"><div class="tt">${o.title} ${o.req?'<span class="req">필수</span>':''}</div>
+    ${o.guide?`<div class="gd">${o.guide}</div>`:''}
+    ${o.kind==='photo'?'<input type="text" placeholder="무엇인가요? (예: 모둠회 대 / 물회)">':''}</div>
+    ${o.req?'':'<button class="x" title="칸 빼기">✕</button>'}
+    <input type="file" accept="${accept}" class="hidden" ${o.capture?`capture="${o.capture}"`:''}>`;
+  const fi=el.querySelector('input[type=file]'), pv=el.querySelector('.pv');
+  pv.onclick=()=>fi.click();
+  fi.onchange=()=>{const f=fi.files[0]; if(!f)return; o.file=f; const u=URL.createObjectURL(f);
+    pv.className='pv done'; pv.innerHTML=o.kind==='video'?`<video src="${u}" muted playsinline></video>`:`<img src="${u}">`; check();};
+  const cap=el.querySelector('input[type=text]'); if(cap)cap.oninput=()=>o.caption=cap.value;
+  const x=el.querySelector('.x'); if(x)x.onclick=()=>{slots.splice(slots.indexOf(o),1); el.remove(); check();};
+  $('slots').appendChild(el);
+}
+SLOT_DEF.forEach(addSlot);
+$('addPhoto').onclick=()=>addSlot({kind:'photo'});
 ['c1','c2'].forEach(i=>$(i).onchange=check);
-function check(){$('send').disabled=!(blob&&files.length&&$('c1').checked&&$('c2').checked);}
+function check(){$('send').disabled=!(blob&&slots.every(o=>!o.req||o.file)&&$('c1').checked&&$('c2').checked);}
 function msg(id,t,c){$(id).textContent=t;$(id).className='msg'+(c?' '+c:'');}
 
 $('send').onclick=()=>{
