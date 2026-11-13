@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>내 가게 | 플레이강릉</title>
+<link rel="icon" href="/favicon.png">
+<style>
+@font-face{font-family:'NanumSquareNeo';src:url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-bRg.woff2) format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'NanumSquareNeo';src:url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-cBd.woff2) format('woff2');font-weight:700;font-display:swap}
+@font-face{font-family:'SeoulNotice';src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/2505-1@1.0/SeoulAlrimTTF-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+:root{--blue:#014d86;--red:#d0161c;--bg:#f3f5f8;--line:#dde3ea;--mut:#5f6b78;--ok:#1d8a4e}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:'NanumSquareNeo','Malgun Gothic',sans-serif;color:#1b2530;line-height:1.55}
+header{background:#fff;border-bottom:1px solid var(--line);padding:12px 16px;display:flex;align-items:center;gap:10px}
+header img{height:34px}header b{color:var(--blue)}
+main{max-width:600px;margin:0 auto;padding:16px}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin-bottom:14px;box-shadow:0 1px 2px rgba(16,40,70,.06),0 6px 18px rgba(16,40,70,.08)}
+h1{font-family:'SeoulNotice',sans-serif;font-size:26px;margin:4px 0;color:var(--blue)}
+h2{font-size:17px;margin:0 0 10px}.mut{color:var(--mut);font-size:14px}
+.bar{height:12px;background:#e7ecf1;border-radius:7px;overflow:hidden;margin-top:4px}.bar i{display:block;height:100%;background:var(--blue)}
+.it{margin:12px 0}.it .row{display:flex;justify-content:space-between}
+.btn{display:block;text-align:center;background:var(--blue);color:#fff;border-radius:12px;padding:14px;font-weight:700;text-decoration:none;font-size:16px}
+select{font:inherit;padding:8px 10px;border-radius:9px;border:1px solid var(--line)}
+.post{padding:8px 0;border-bottom:1px solid var(--line)}.post:last-child{border:0}
+.post a{color:var(--blue);font-size:13px;margin-right:8px}
+.pill{display:inline-block;font-size:12px;padding:2px 9px;border-radius:20px;background:#e3f4ea;color:var(--ok);font-weight:700}
+.err{color:var(--red)}
+</style>
+</head>
+<body>
+<header><img src="/brand/logo-wide.png" alt="플레이강릉"><b>사장님 화면</b></header>
+<main id="app"><div class="card mut">불러오는 중…</div></main>
+<script>
+const API='https://admin.playgangneung.com/api/pg/owner';
+const P=new URLSearchParams(location.search);const C=P.get('c')||'',T=P.get('t')||'';
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const won=n=>Number(n||0).toLocaleString('ko-KR');
+const ch={youtube:'유튜브',facebook:'페이스북',instagram:'인스타그램',blog:'블로그'};
+async function load(month){
+  const app=document.getElementById('app');
+  try{
+    const r=await fetch(`${API}?c=${encodeURIComponent(C)}&t=${encodeURIComponent(T)}${month?'&month='+month:''}`);const j=await r.json();
+    if(!j.ok)throw new Error(j.error);const R=j.report;
+    app.innerHTML=`<div class="card"><div class="mut">${esc(R.shop.owner)} 사장님, 안녕하세요</div><h1>${esc(R.shop.name)}</h1>
+      <div class="mut">${esc(R.shop.plan)} 요금제 ${j.pay.state==='active'?'<span class="pill">정기결제 중</span>':''}${P.get('pay')==='done'?' · 결제가 완료되었습니다. 감사합니다!':''}</div></div>
+    <div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><h2 style="margin:0">이달의 홍보 현황</h2>
+      <select id="m">${j.months.map(m=>`<option ${m===R.month?'selected':''}>${m}</option>`).join('')}</select></div>
+      ${R.items.map(i=>`<div class="it"><div class="row"><span>${i.label}</span><b>${won(i.done)} / ${won(i.goal)}</b></div><div class="bar"><i style="width:${Math.min(100,i.goal?i.done/i.goal*100:0)}%"></i></div></div>`).join('')}
+      <p class="mut">조회 ${won(R.stats.views)} · 좋아요 ${won(R.stats.likes)} · 댓글 ${won(R.stats.comments)}</p></div>
+    <div class="card"><h2>올라간 게시물 (${R.posts.length})</h2>${R.posts.length?R.posts.map(p=>`<div class="post"><div>${esc(p.title)}</div><div class="mut">${new Date(p.postedAt).toLocaleDateString('ko-KR')}</div><div>${Object.entries(p.postUrls||{}).map(([k,v])=>`<a href="${esc(v)}" target="_blank" rel="noopener">${ch[k]||esc(k)}에서 보기</a>`).join('')}</div></div>`).join(''):'<p class="mut">이번 달 게시물이 곧 올라갑니다.</p>'}</div>
+    <a class="btn" href="${esc(j.studioUrl)}">새 사진·영상·목소리 보내기</a>
+    <p class="mut" style="text-align:center;margin-top:18px">플레이강릉 · 비즈펍 | 문의: moneypuzzlebiz@gmail.com</p>`;
+    document.getElementById('m').onchange=e=>load(e.target.value);
+  }catch(e){app.innerHTML=`<div class="card err">${esc(e.message||'불러오지 못했습니다.')}</div>`}
+}
+load(P.get('month'));
+</script>
+</body>
+</html>

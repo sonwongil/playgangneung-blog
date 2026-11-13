@@ -63,11 +63,11 @@
   <h2><span class="n">1</span>가게 정보</h2>
   <p class="desc">입력하시면 아래 원고가 자동으로 바뀝니다.</p>
   <label for="shop">가게 이름</label>
-  <input id="shop" type="text" value="대원호 횟집">
+  <input id="shop" type="text" value="" placeholder="가게 이름">
   <label for="owner">사장님 성함</label>
-  <input id="owner" type="text" value="김성복">
+  <input id="owner" type="text" value="" placeholder="사장님 성함">
   <label for="pride">가게 자랑 한 줄</label>
-  <input id="pride" type="text" value="매일 새벽 주문진에서 직접 고른 자연산 회만 씁니다">
+  <input id="pride" type="text" value="" placeholder="예: 매일 아침 배에서 바로 들어온 생선만 씁니다">
 </section>
 
 <section class="card">
@@ -196,25 +196,25 @@ async function upload(file,kind,name,onp){
   for(let pos=0;pos<file.size;){
     const part=file.slice(pos,pos+CHUNK);
     const r=await api({action:'chunk',session:st.session,start:pos,total:file.size,mime:file.type,data:b64(await part.arrayBuffer())});
-    pos+=part.size; onp(part.size); if(r.done)break;
+    pos+=part.size; onp(part.size); if(r.done)return r.id;
   }
 }
 let voiceSec=0;
 $('send').onclick=async()=>{
   if(!CODE){msg('sendmsg','가게 전용 주소로 들어오셔야 보낼 수 있습니다. 플레이강릉에서 보내 드린 주소를 눌러 주세요.','bad');return;}
   const d=new Date(),z=n=>String(n).padStart(2,'0'); const stamp=`${d.getFullYear()}${z(d.getMonth()+1)}${z(d.getDate())}-${z(d.getHours())}${z(d.getMinutes())}`;
-  const jobs=[{file:blob,kind:'voice',name:`목소리_${stamp}${ext(blob)}`}];
+  const jobs=[{file:blob,kind:'voice',name:`목소리_${stamp}${ext(blob)}`,caption:''}];
   let pn=0;
   for(const o of slots){ if(!o.file)continue;
-    if(o.kind==='video') jobs.push({file:o.file,kind:'video',name:`${o.title.split(' · ')[0].replace(' ','')}_${o.title.split(' · ')[1]||''}_${stamp}${ext(o.file)}`});
+    if(o.kind==='video') jobs.push({file:o.file,kind:'video',caption:o.title.split(' · ')[1]||'',name:`${o.title.split(' · ')[0].replace(' ','')}_${o.title.split(' · ')[1]||''}_${stamp}${ext(o.file)}`});
     else {pn++; const cap=(o.caption||'').trim()||(o.title.split(' · ')[1]||'사진');
-      jobs.push({file:o.file,kind:'photo',name:`사진${String(pn).padStart(2,'0')}_${cap}_${stamp}${ext(o.file)}`});}
+      jobs.push({file:o.file,kind:'photo',caption:cap,name:`사진${String(pn).padStart(2,'0')}_${cap}_${stamp}${ext(o.file)}`});}
   }
   const total=jobs.reduce((a,j)=>a+j.file.size,0); let done=0;
   $('send').disabled=true;
   try{
-    for(const j of jobs){ await upload(j.file,j.kind,j.name,n=>{done+=n;msg('sendmsg',`보내는 중… ${Math.round(done/total*100)}% (${j.name.split('_')[0]})`);}); }
-    await api({action:'done',owner:$('owner').value,pride:$('pride').value,script:$('script').textContent,voiceSec,c1:$('c1').checked,c2:$('c2').checked,files:jobs.map(j=>j.name)});
+    for(const j of jobs){ j.id=await upload(j.file,j.kind,j.name,n=>{done+=n;msg('sendmsg',`보내는 중… ${Math.round(done/total*100)}% (${j.name.split('_')[0]})`);}); }
+    await api({action:'done',owner:$('owner').value,pride:$('pride').value,script:$('script').textContent,voiceSec,c1:$('c1').checked,c2:$('c2').checked,files:jobs.map(j=>({name:j.name,id:j.id||'',kind:j.kind,caption:j.caption||'',mime:j.file.type||''}))});
     msg('sendmsg','다 보냈습니다. 감사합니다! 영상이 만들어지면 확인 연락을 드리겠습니다.','good');
   }catch(e){ msg('sendmsg','보내다가 멈췄습니다: '+e.message+' — 잠시 뒤 다시 눌러 주세요.','bad'); $('send').disabled=false; }
 };

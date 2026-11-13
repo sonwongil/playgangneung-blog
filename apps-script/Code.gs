@@ -9,6 +9,8 @@
 const ROOT_FOLDER_ID = '1tCwAwCybNDC4L9kQwi0lBRMmwiY4FwnF'; // 플레이강릉
 const RAW_FOLDER_NAME = '01_촬영원본';
 const KINDS = { voice: '목소리', video: '영상', photo: '사진' };
+// 11/13 관리자(admin.playgangneung.com) 연동: 스크립트 속성 SERVER·INTAKE_KEY
+const prop_ = (k) => PropertiesService.getScriptProperties().getProperty(k) || '';
 
 function doGet(e) { return handle_(e.parameter || {}); }
 function doPost(e) {
@@ -19,7 +21,12 @@ function doPost(e) {
 
 function handle_(p) {
   try {
-    const shop = shops_()[String(p.code || '')];
+    if (p.action === 'token') {
+      if (!prop_('INTAKE_KEY') || String(p.key || '') !== prop_('INTAKE_KEY')) return out_({ ok: false, error: '열쇠가 맞지 않습니다.' });
+      DriveApp.getRootFolder(); // 드라이브 권한 확인
+      return out_({ ok: true, token: ScriptApp.getOAuthToken() });
+    }
+    const shop = shopOf_(String(p.code || ''));
     if (!shop) return out_({ ok: false, error: '가게 코드가 맞지 않습니다.' });
     if (p.action === 'info') return out_({ ok: true, name: shop.name, owner: shop.owner || '' });
     if (p.action === 'start') return out_(start_(shop, p));
@@ -33,6 +40,24 @@ function handle_(p) {
 
 function shops_() {
   return JSON.parse(PropertiesService.getScriptProperties().getProperty('SHOPS') || '{}');
+}
+
+function shopOf_(code) {
+  if (!code) return null;
+  const local = shops_()[code];
+  if (local) return local;
+  const server = prop_('SERVER'), key = prop_('INTAKE_KEY');
+  if (!server || !key) return null;
+  const cache = CacheService.getScriptCache(); const hit = cache.get('shop:' + code);
+  if (hit) return JSON.parse(hit);
+  try {
+    const r = UrlFetchApp.fetch(server + '/api/pg/shop-check?code=' + encodeURIComponent(code) + '&key=' + encodeURIComponent(key), { muteHttpExceptions: true });
+    const j = JSON.parse(r.getContentText());
+    if (!j.ok) return null;
+    const shop = { name: j.name, owner: j.owner, code: code };
+    cache.put('shop:' + code, JSON.stringify(shop), 600);
+    return shop;
+  } catch (e) { return null; }
 }
 
 function child_(parent, name) {
@@ -93,10 +118,18 @@ function done_(shop, p) {
     '녹음 길이: ' + (p.voiceSec || '') + '초',
     '동의: 목소리 영상 사용 ' + (p.c1 ? '예' : '아니오') + ' / AI 목소리 복제 ' + (p.c2 ? '예' : '아니오') + ' (' + stamp + ')',
     '올린 파일:',
-  ].concat((p.files || []).map(function (f) { return ' - ' + f; })).join('\n') + '\n\n';
+  ].concat((p.files || []).map(function (f) { return ' - ' + (typeof f === 'string' ? f : f.name); })).join('\n') + '\n\n';
   const it = folder.getFilesByName('가게정보.txt');
   if (it.hasNext()) { const f = it.next(); f.setContent(f.getBlob().getDataAsString() + lines); }
   else folder.createFile('가게정보.txt', lines, MimeType.PLAIN_TEXT);
+  const server = prop_('SERVER'), key = prop_('INTAKE_KEY');
+  if (server && key) {
+    try {
+      UrlFetchApp.fetch(server + '/api/pg/intake', { method: 'post', contentType: 'application/json', muteHttpExceptions: true,
+        payload: JSON.stringify({ key: key, code: shop.code || p.code, folderUrl: folder.getUrl(), folderId: folder.getId(), files: p.files || [],
+          pride: p.pride || '', script: p.script || '', voiceSec: p.voiceSec || '', c1: !!p.c1, c2: !!p.c2 }) });
+    } catch (e) { /* 알림 실패해도 자료는 드라이브에 있다 */ }
+  }
   return { ok: true, folderUrl: folder.getUrl() };
 }
 
