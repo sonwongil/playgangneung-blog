@@ -13,11 +13,8 @@ const OWNER_AFTER = 3; // 몇 번째 카드 뒤에 '사장님이신가요?' 띠�
 <Layout title="플레이강릉 | 오직! 강릉">
   <Header />
   <main id="main-content" class="app-layout my-1 pb-10">
-    <section class="pg-col pt-6 pb-4">
-      <h1 class="font-title text-3xl sm:text-4xl" style="font-weight:700;color:var(--accent);text-align:center">
-        오직! 강릉
-      </h1>
-      <p class="text-muted-foreground mt-2 text-sm" style="text-align:center" id="order-note">강릉의 가게와 가볼 곳</p>
+    <section class="pg-hero" aria-label="오직! 강릉">
+      <h1 class="font-title">오직! 강릉</h1>
     </section>
 
     <nav class="pg-cats" aria-label="분류">
@@ -65,11 +62,21 @@ const OWNER_AFTER = 3; // 몇 번째 카드 뒤에 '사장님이신가요?' 띠�
         </>
       ))}
     </section>
+    <p class="pg-credit">맨 위 배경 사진: <a href="https://commons.wikimedia.org/wiki/User:Mobius6" target="_blank" rel="noopener">Mobius6</a>(안목해변 커피거리·오죽헌·경포호·중앙시장), <a href="https://commons.wikimedia.org/wiki/File:Jeongdongjin_(2006).jpg" target="_blank" rel="noopener">Masterhatch</a>(정동진) · 위키미디어 공용 · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.ko" target="_blank" rel="noopener">CC BY-SA 4.0</a> · 잘라 붙이고 흐리게 처리함</p>
   </main>
   <Footer />
 </Layout>
 
 <style is:global>
+  .pg-hero { position:relative; height:190px; margin:10px 0 16px; width:100vw; margin-left:calc(50% - 50vw); overflow:hidden;
+    background:#121214 url('/brand/film-strip.jpg') center/auto 100% repeat-x; display:flex; align-items:center; justify-content:center; }
+  .pg-hero::before { content:""; position:absolute; inset:0;
+    background:radial-gradient(ellipse at center, rgba(0,0,0,.55) 0%, rgba(0,0,0,.25) 55%, rgba(0,0,0,.1) 100%); }
+  .pg-hero h1 { position:relative; margin:0; color:#fff; font-weight:700; font-size:44px; letter-spacing:-.5px;
+    text-shadow:0 2px 6px rgba(0,0,0,.6), 0 0 22px rgba(1,77,134,.55); }
+  @media (min-width:640px){ .pg-hero { height:230px; } .pg-hero h1 { font-size:56px; } }
+  .pg-credit { max-width:600px; margin:28px auto 0; font-size:11px; color:var(--muted-foreground); text-align:center; }
+  .pg-credit a { text-decoration:underline; }
   .pg-cats { display:flex; justify-content:center; justify-content:safe center; gap:6px; overflow-x:auto; padding:4px 0 14px; }
   .pg-cats button { flex:none; padding:7px 13px; border-radius:999px; border:1px solid var(--border); background:#fff; font-size:14px; cursor:pointer; }
   .pg-cats button.on { background:var(--accent); color:#fff; border-color:var(--accent); font-weight:700; }
@@ -107,7 +114,6 @@ const OWNER_AFTER = 3; // 몇 번째 카드 뒤에 '사장님이신가요?' 띠�
   const feed = document.getElementById("feed")!;
   const owner = feed.querySelector("[data-owner]")!;
   const cards = () => [...feed.querySelectorAll<HTMLElement>(".pg-card")];
-  const note = document.getElementById("order-note")!;
 
   function place(list: HTMLElement[]) {
     list.forEach((c, i) => { feed.appendChild(c); if (i === 2) feed.appendChild(owner); });
@@ -129,7 +135,6 @@ const OWNER_AFTER = 3; // 몇 번째 카드 뒤에 '사장님이신가요?' 띠�
       return { c, d };
     }).sort((a, b) => a.d - b.d).map(x => x.c);
     place(l);
-    note.textContent = "지금 계신 곳에서 가까운 순입니다";
   }
 
   const isPhone = matchMedia("(pointer: coarse)").matches;
@@ -144,7 +149,7 @@ const OWNER_AFTER = 3; // 몇 번째 카드 뒤에 '사장님이신가요?' 띠�
     ask.hidden = true;
     navigator.geolocation.getCurrentPosition(
       p => byDistance(p.coords.latitude, p.coords.longitude),
-      () => { note.textContent = "위치를 확인하지 못해 섞어서 보여 드립니다"; },
+      () => {},
       { enableHighAccuracy: false, timeout: 8000, maximumAge: 600000 }
     );
   });

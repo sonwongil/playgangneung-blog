@@ -38,3 +38,4 @@
 :target {
   scroll-margin-block: 1rem;
 }
+html, body { overflow-x: clip; }
