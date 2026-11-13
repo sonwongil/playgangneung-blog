@@ -62,19 +62,19 @@ const OWNER_AFTER = 3; // 몇 번째 카드 뒤에 '사장님이신가요?' 띠�
         </>
       ))}
     </section>
-    <p class="pg-credit">맨 위 배경 사진: <a href="https://commons.wikimedia.org/wiki/User:Mobius6" target="_blank" rel="noopener">Mobius6</a>(안목해변 커피거리·오죽헌·경포호·중앙시장), <a href="https://commons.wikimedia.org/wiki/File:Jeongdongjin_(2006).jpg" target="_blank" rel="noopener">Masterhatch</a>(정동진) · 위키미디어 공용 · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.ko" target="_blank" rel="noopener">CC BY-SA 4.0</a> · 잘라 붙이고 흐리게 처리함</p>
+    <p class="pg-credit">맨 위 배경 사진: <a href="https://commons.wikimedia.org/wiki/File:Yellow_lifeguard_tower_on_the_beach_in_Gangneung_(55578062337).jpg" target="_blank" rel="noopener">Sergiy Galyonkin</a> · 위키미디어 공용 · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.ko" target="_blank" rel="noopener">CC BY-SA 4.0</a> · 가로로 잘라 사용</p>
   </main>
   <Footer />
 </Layout>
 
 <style is:global>
-  .pg-hero { position:relative; height:190px; margin:10px 0 16px; width:100vw; margin-left:calc(50% - 50vw); overflow:hidden;
-    background:#121214 url('/brand/film-strip.jpg') center/auto 100% repeat-x; display:flex; align-items:center; justify-content:center; }
+  .pg-hero { position:relative; height:130px; margin:10px 0 16px; width:100vw; margin-left:calc(50% - 50vw); overflow:hidden;
+    background:#7fb6c8 url('/brand/hero-beach.jpg') center 60%/cover no-repeat; display:flex; align-items:center; justify-content:center; }
   .pg-hero::before { content:""; position:absolute; inset:0;
-    background:radial-gradient(ellipse at center, rgba(0,0,0,.55) 0%, rgba(0,0,0,.25) 55%, rgba(0,0,0,.1) 100%); }
+    background:radial-gradient(ellipse at center, rgba(0,30,60,.38) 0%, rgba(0,30,60,.12) 60%, rgba(0,0,0,0) 100%); }
   .pg-hero h1 { position:relative; margin:0; color:#fff; font-weight:700; font-size:44px; letter-spacing:-.5px;
     text-shadow:0 2px 6px rgba(0,0,0,.6), 0 0 22px rgba(1,77,134,.55); }
-  @media (min-width:640px){ .pg-hero { height:230px; } .pg-hero h1 { font-size:56px; } }
+  @media (min-width:640px){ .pg-hero { height:170px; } .pg-hero h1 { font-size:56px; } }
   .pg-credit { max-width:600px; margin:28px auto 0; font-size:11px; color:var(--muted-foreground); text-align:center; }
   .pg-credit a { text-decoration:underline; }
   .pg-cats { display:flex; justify-content:center; justify-content:safe center; gap:6px; overflow-x:auto; padding:4px 0 14px; }
