@@ -14,9 +14,9 @@ const OWNER_AFTER = 3; // 몇 번째 카드 뒤에 '사장님이신가요?' 띠�
   <Header />
   <main id="main-content" class="app-layout my-1 pb-10">
     <section class="pg-hero" aria-label="오직! 강릉">
-      <img class="pg-hero-bg" src="/brand/hero-beach.jpg" alt="" />
+      <img class="pg-hero-bg" src="/brand/hero-9x1.jpg" alt="" />
       <h1 class="font-title">오직! 강릉</h1>
-      <img class="pg-hero-front" src="/brand/hero-people.png" alt="" />
+      <img class="pg-hero-front" src="/brand/hero-9x1-front.png" alt="" />
     </section>
 
     <nav class="pg-cats" aria-label="분류">
@@ -64,18 +64,18 @@ const OWNER_AFTER = 3; // 몇 번째 카드 뒤에 '사장님이신가요?' 띠�
         </>
       ))}
     </section>
-    <p class="pg-credit">맨 위 배경 사진: <a href="https://commons.wikimedia.org/wiki/File:Yellow_lifeguard_tower_on_the_beach_in_Gangneung_(55578062337).jpg" target="_blank" rel="noopener">Sergiy Galyonkin</a> · 위키미디어 공용 · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.ko" target="_blank" rel="noopener">CC BY-SA 4.0</a> · 가로로 잘라 사용 · 배너 속 인물은 AI로 만든 이미지입니다(실제 인물이 아닙니다).</p>
+    <p class="pg-credit">맨 위 배너 그림은 실제 강릉 해변 사진을 참고해 AI로 만든 이미지입니다(실제 장소·인물이 아닙니다).</p>
   </main>
   <Footer />
 </Layout>
 
 <style is:global>
   /* 배너: 배경 → 입체 글씨 → 사람·차(글씨 앞) 세 겹. 두 그림은 같은 크기·같은 자르기라 정확히 겹친다 */
-  .pg-hero { position:relative; height:max(170px, 9.2vw); margin:10px 0 16px; width:100vw; margin-left:calc(50% - 50vw); overflow:hidden; background:#7fb6e8; }
-  .pg-hero-bg { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:50% 50%; }
-  .pg-hero-front { position:absolute; z-index:2; bottom:-10%; left:50.5%; height:74%; width:auto; transform:translateX(-50%); pointer-events:none; filter:drop-shadow(0 4px 6px rgba(0,0,0,.35)); }
-  .pg-hero h1 { position:absolute; z-index:1; inset:0 0 14% 0; margin:0; display:flex; align-items:center; justify-content:center; white-space:nowrap;
-    font-family:'SeoulNotice',sans-serif; font-weight:900; font-size:min(21vw, max(124px, 6.8vw)); line-height:1; letter-spacing:-2px; color:#fff;
+  .pg-hero { position:relative; height:max(170px, 11.11vw); margin:10px 0 16px; width:100vw; margin-left:calc(50% - 50vw); overflow:hidden; background:#7fb6e8; }
+  .pg-hero-bg, .pg-hero-front { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:53.5% 50%; }
+  .pg-hero-front { z-index:2; pointer-events:none; }
+  .pg-hero h1 { position:absolute; z-index:1; left:0; right:0; top:7%; margin:0; text-align:center; white-space:nowrap;
+    font-family:'SeoulNotice',sans-serif; font-weight:900; font-size:min(21vw, max(108px, 7vw)); line-height:1; letter-spacing:-2px; color:#fff;
     text-shadow:1px 1px 0 #d6e3f0, 2px 2px 0 #c3d4e6, 3px 3px 0 #aec4dc, 4px 4px 0 #014d86, 5px 5px 0 #014d86, 6px 6px 0 #013e6d, 8px 10px 14px rgba(0,0,0,.4); }
   .pg-credit { max-width:600px; margin:28px auto 0; font-size:11px; color:var(--muted-foreground); text-align:center; }
   .pg-credit a { text-decoration:underline; }
