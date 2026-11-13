@@ -1,0 +1,162 @@
+[
+ {
+  "id": "gyeongpo-beach",
+  "type": "place",
+  "cat": "가볼 곳",
+  "name": "경포해변",
+  "area": "강문동",
+  "lat": 37.8055,
+  "lng": 128.9087,
+  "line": "강릉을 대표하는 넓은 백사장과 소나무 숲"
+ },
+ {
+  "id": "anmok-coffee",
+  "type": "place",
+  "cat": "카페",
+  "name": "안목해변 커피거리",
+  "area": "견소동",
+  "lat": 37.772,
+  "lng": 128.9476,
+  "line": "바다를 보며 커피 한 잔, 강릉 커피의 시작"
+ },
+ {
+  "id": "gyeongpodae",
+  "type": "place",
+  "cat": "가볼 곳",
+  "name": "경포대",
+  "area": "저동",
+  "lat": 37.7955,
+  "lng": 128.8966,
+  "line": "경포호를 내려다보는 관동팔경 누각"
+ },
+ {
+  "id": "ojukheon",
+  "type": "place",
+  "cat": "가볼 곳",
+  "name": "오죽헌",
+  "area": "죽헌동",
+  "lat": 37.7792,
+  "lng": 128.878,
+  "line": "율곡 이이가 태어난 검은 대나무 집"
+ },
+ {
+  "id": "jeongdongjin",
+  "type": "place",
+  "cat": "가볼 곳",
+  "name": "정동진",
+  "area": "강동면",
+  "lat": 37.6906,
+  "lng": 129.0344,
+  "line": "바다와 가장 가까운 기차역, 해돋이 명소"
+ },
+ {
+  "id": "jumunjin-market",
+  "type": "place",
+  "cat": "맛집",
+  "name": "주문진수산시장",
+  "area": "주문진읍",
+  "lat": 37.8916,
+  "lng": 128.8279,
+  "line": "갓 잡은 해산물을 바로 맛보는 동해 대표 어시장"
+ },
+ {
+  "id": "jungang-market",
+  "type": "place",
+  "cat": "맛집",
+  "name": "강릉중앙시장",
+  "area": "성남동",
+  "lat": 37.7545,
+  "lng": 128.8986,
+  "line": "닭강정·감자전·호떡, 먹거리 가득한 전통시장"
+ },
+ {
+  "id": "chodang-tofu",
+  "type": "place",
+  "cat": "맛집",
+  "name": "초당순두부마을",
+  "area": "초당동",
+  "lat": 37.7914,
+  "lng": 128.915,
+  "line": "바닷물로 굳힌 고소한 초당 순두부"
+ },
+ {
+  "id": "gangmun-beach",
+  "type": "place",
+  "cat": "가볼 곳",
+  "name": "강문해변",
+  "area": "강문동",
+  "lat": 37.7955,
+  "lng": 128.92,
+  "line": "사진 찍기 좋은 조형물과 잔잔한 바다"
+ },
+ {
+  "id": "songjeong-beach",
+  "type": "place",
+  "cat": "가볼 곳",
+  "name": "송정해변",
+  "area": "송정동",
+  "lat": 37.7742,
+  "lng": 128.9373,
+  "line": "해송 숲길이 이어지는 조용한 바다"
+ },
+ {
+  "id": "sacheon-beach",
+  "type": "place",
+  "cat": "가볼 곳",
+  "name": "사천해변",
+  "area": "사천면",
+  "lat": 37.8418,
+  "lng": 128.874,
+  "line": "물회 골목과 맑은 물빛의 한적한 해변"
+ },
+ {
+  "id": "seongyojang",
+  "type": "place",
+  "cat": "가볼 곳",
+  "name": "선교장",
+  "area": "운정동",
+  "lat": 37.7863,
+  "lng": 128.8895,
+  "line": "300년 넘게 이어진 조선 사대부 가옥"
+ },
+ {
+  "id": "haslla",
+  "type": "place",
+  "cat": "가볼 곳",
+  "name": "하슬라아트월드",
+  "area": "강동면",
+  "lat": 37.7066,
+  "lng": 129.0108,
+  "line": "바다 언덕 위 조각공원과 미술관"
+ },
+ {
+  "id": "wolhwa-street",
+  "type": "place",
+  "cat": "가볼 곳",
+  "name": "월화거리",
+  "area": "성남동",
+  "lat": 37.7552,
+  "lng": 128.898,
+  "line": "옛 철길 위에 만든 산책로와 야시장"
+ },
+ {
+  "id": "sogeumgang",
+  "type": "place",
+  "cat": "가볼 곳",
+  "name": "소금강",
+  "area": "연곡면",
+  "lat": 37.8106,
+  "lng": 128.7068,
+  "line": "계곡과 폭포가 이어지는 오대산 자락 명승"
+ },
+ {
+  "id": "anbandegi",
+  "type": "place",
+  "cat": "가볼 곳",
+  "name": "안반데기",
+  "area": "왕산면",
+  "lat": 37.6253,
+  "lng": 128.74,
+  "line": "구름 위 배추밭, 별 보기 좋은 고원 마을"
+ }
+]

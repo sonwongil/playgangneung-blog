@@ -1,127 +1,159 @@
 ---
-import { getCollection } from "astro:content";
-import { getRelativeLocaleUrl } from "astro:i18n";
-import IconRss from "@/assets/icons/IconRss.svg";
-import IconArrowRight from "@/assets/icons/IconArrowRight.svg";
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
-import Socials from "@/components/Socials.astro";
-import Card from "@/components/Card.astro";
-import LinkButton from "@/components/LinkButton.astro";
-import { getSortedPosts } from "@/utils/getSortedPosts";
-import { useTranslations } from "@/i18n";
-import config from "@/config";
+import places from "@/data/places.json";
 
-const { socials, posts: postsConfig } = config;
-
-const locale = Astro.currentLocale ?? config.site.lang;
-const t = useTranslations(locale);
-
-const posts = await getCollection("posts");
-const sortedPosts = getSortedPosts(posts);
-const featuredPosts = sortedPosts.filter(({ data }) => data.featured);
-const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
-const homePath = getRelativeLocaleUrl(locale, "");
+// 카드 순서: 휴대폰은 위치 허락 시 가까운 순, PC는 무작위(아래 스크립트). 요금제와 무관.
+// 가게(type: "shop") 카드는 같은 피드에 섞여 들어간다.
+const cats = ["전체", "맛집", "카페", "숙소", "가볼 곳"];
+const OWNER_AFTER = 3; // 몇 번째 카드 뒤에 '사장님이신가요?' 띠를 넣을지
 ---
 
-<Layout>
+<Layout title="플레이강릉 | 오직 강릉만 소개합니다">
   <Header />
-  <main
-    id="main-content"
-    data-layout="index"
-    data-home-path={homePath}
-    class="app-layout my-1"
-  >
-    <section id="hero" class="border-border border-b pt-8 pb-6">
-      <h1 class="my-4 inline-block text-4xl font-bold sm:my-8 sm:text-5xl">
-        강릉, 어디 갈까?
-      </h1>{" "}
-      <a
-        target="_blank"
-        href={`${import.meta.env.BASE_URL.replace(/\/?$/, "/")}rss.xml`}
-        class="inline-block"
-        aria-label="RSS Feed"
-        title="RSS Feed"
-      >
-        <IconRss
-          width={20}
-          height={20}
-          class="stroke-accent scale-125 stroke-3 rtl:-rotate-90"
-        />
-        <span class="sr-only">RSS Feed</span>
-      </a>
-
-      <p>
-        플레이강릉은 강릉의 맛집, 숙소, 가볼 만한 곳을 짧은 영상과 글로
-        소개합니다. 찾아가는 데 필요한 주소·영업시간·대표 메뉴도 함께
-        정리해 둡니다.
-      </p>
-      {
-        socials.length > 0 && (
-          <div class="mt-4 flex max-sm:flex-col sm:items-center">
-            <div class="me-2 mb-1 whitespace-nowrap sm:mb-0">
-              {t.home.socialLinks}:
-            </div>
-            <Socials />
-          </div>
-        )
-      }
+  <main id="main-content" class="app-layout my-1 pb-10">
+    <section class="pt-6 pb-4">
+      <h1 class="font-title text-3xl sm:text-4xl" style="font-weight:900;color:var(--accent)">
+        오직 강릉만 소개합니다
+      </h1>
+      <p class="text-muted-foreground mt-2 text-sm" id="order-note">강릉의 가게와 가볼 곳</p>
     </section>
 
-    {
-      featuredPosts.length > 0 && (
-        <section
-          id="featured"
-          class:list={[
-            "pt-12 pb-6",
-            { "border-border border-b": recentPosts.length > 0 },
-          ]}
-        >
-          <h2 class="text-2xl font-semibold tracking-wide">
-            {t.home.featured}
-          </h2>
-          <ul>
-            {featuredPosts.map(data => (
-              <Card variant="h3" {...data} />
-            ))}
-          </ul>
-        </section>
-      )
-    }
+    <nav class="pg-cats" aria-label="분류">
+      {cats.map((c, i) => (
+        <button type="button" data-cat={c} class={i === 0 ? "on" : ""}>{c}</button>
+      ))}
+    </nav>
 
-    {
-      recentPosts.length > 0 && (
-        <section id="recent-posts" class="pt-12 pb-6">
-          <h2 class="text-2xl font-semibold tracking-wide">
-            {t.home.recentPosts}
-          </h2>
-          <ul>
-            {recentPosts.slice(0, postsConfig.perIndex).map(data => (
-              <Card variant="h3" {...data} />
-            ))}
-          </ul>
-        </section>
-      )
-    }
+    <section id="loc-ask" class="pg-ask" hidden>
+      <b>가까운 곳부터 보여 드릴까요?</b>
+      <p>지금 계신 곳에서 가장 가까운 강릉의 가게와 장소를 먼저 소개해 드리기 위해 위치를 사용합니다. 위치는 순서를 정하는 데만 쓰고 저장하지 않습니다.</p>
+      <div>
+        <button type="button" id="loc-yes" class="pg-btn main">가까운 순으로 보기</button>
+        <button type="button" id="loc-no" class="pg-btn">괜찮아요</button>
+      </div>
+    </section>
 
-    <div class="my-8 text-center">
-      <LinkButton href={getRelativeLocaleUrl(locale, "posts")}>
-        {t.home.allPosts}
-        <IconArrowRight class="inline-block rtl:-rotate-180" />
-      </LinkButton>
-    </div>
+    <section id="feed" class="pg-feed">
+      {places.map((p, i) => (
+        <>
+          <article class="pg-card" data-cat={p.cat} data-lat={p.lat} data-lng={p.lng} data-type={p.type}>
+            <div class="pg-media" aria-hidden="true">
+              <span>{p.name}</span>
+            </div>
+            <div class="pg-body">
+              <div class="pg-meta">
+                <span class="pg-tag">{p.cat}</span>
+                <span class="pg-area">{p.area}</span>
+                <span class="pg-dist"></span>
+              </div>
+              <h2>{p.name}</h2>
+              <p>{p.line}</p>
+              <div class="pg-actions">
+                <a class="pg-btn" target="_blank" rel="noopener" href={`https://map.naver.com/p/search/${encodeURIComponent("강릉 " + p.name)}`}>지도·길찾기</a>
+              </div>
+            </div>
+          </article>
+          {i === OWNER_AFTER - 1 && (
+            <aside class="pg-owner" data-owner>
+              <b>사장님이신가요?</b>
+              <p>우리 가게도 여기에 소개하기 — 영상·블로그 제작부터 SNS 게시까지</p>
+              <span class="pg-soon">안내 페이지 준비 중</span>
+            </aside>
+          )}
+        </>
+      ))}
+    </section>
   </main>
   <Footer />
 </Layout>
 
+<style is:global>
+  .pg-cats { display:flex; gap:8px; overflow-x:auto; padding:4px 0 14px; }
+  .pg-cats button { flex:none; padding:8px 16px; border-radius:999px; border:1px solid var(--border); background:var(--background); font-size:15px; cursor:pointer; }
+  .pg-cats button.on { background:var(--accent); color:#fff; border-color:var(--accent); font-weight:700; }
+  .pg-ask { border:2px solid var(--accent); border-radius:16px; padding:16px 18px; margin-bottom:16px; }
+  .pg-ask p { font-size:14px; margin:6px 0 12px; color:var(--muted-foreground); }
+  .pg-ask div { display:flex; gap:8px; }
+  .pg-btn { display:inline-block; padding:9px 16px; border-radius:10px; border:1px solid var(--border); font-size:14px; background:var(--background); cursor:pointer; text-decoration:none; }
+  .pg-btn.main { background:var(--accent); color:#fff; border-color:var(--accent); font-weight:700; }
+  .pg-feed { display:grid; gap:18px; grid-template-columns:1fr; }
+  @media (min-width:640px){ .pg-feed { grid-template-columns:1fr 1fr; } }
+  .pg-card { border:1px solid var(--border); border-radius:16px; overflow:hidden; background:var(--background); }
+  .pg-media { aspect-ratio:4/3; display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(135deg,#014d86,#3a86c8 60%,#fdf6ec); color:#fff; }
+  .pg-media span { font-family:'SeoulNotice',sans-serif; font-weight:900; font-size:28px; text-shadow:0 2px 8px rgba(0,0,0,.35); }
+  .pg-body { padding:14px 16px 16px; }
+  .pg-meta { display:flex; gap:8px; align-items:center; font-size:13px; color:var(--muted-foreground); }
+  .pg-tag { background:#d0161c; color:#fff; padding:2px 8px; border-radius:6px; font-weight:700; }
+  .pg-dist { margin-left:auto; color:var(--accent); font-weight:700; }
+  .pg-card h2 { font-size:21px; margin:8px 0 4px; }
+  .pg-card p { font-size:15px; margin:0; }
+  .pg-actions { margin-top:12px; }
+  .pg-owner { grid-column:1/-1; border-radius:16px; padding:18px; background:#014d86; color:#fff; }
+  .pg-owner b { font-family:'SeoulNotice',sans-serif; font-size:20px; }
+  .pg-owner p { margin:4px 0 0; font-size:15px; opacity:.92; }
+  .pg-soon { display:inline-block; margin-top:8px; font-size:12px; opacity:.7; }
+  .pg-hide { display:none; }
+</style>
+
 <script>
-  document.addEventListener("astro:page-load", () => {
-    const indexLayout = (document.querySelector("#main-content") as HTMLElement)
-      ?.dataset;
-    const baseRoot = import.meta.env.BASE_URL.replace(/\/?$/, "/");
-    if (indexLayout?.layout) {
-      sessionStorage.setItem("backUrl", indexLayout.homePath ?? baseRoot);
-    }
+  const feed = document.getElementById("feed")!;
+  const owner = feed.querySelector("[data-owner]")!;
+  const cards = () => [...feed.querySelectorAll<HTMLElement>(".pg-card")];
+  const note = document.getElementById("order-note")!;
+
+  function place(list: HTMLElement[]) {
+    list.forEach((c, i) => { feed.appendChild(c); if (i === 2) feed.appendChild(owner); });
+  }
+  function shuffle() {
+    const l = cards();
+    for (let i = l.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [l[i], l[j]] = [l[j], l[i]]; }
+    place(l);
+  }
+  function km(a: number, b: number, c: number, d: number) {
+    const r = Math.PI / 180, x = Math.sin(((c - a) * r) / 2) ** 2 + Math.cos(a * r) * Math.cos(c * r) * Math.sin(((d - b) * r) / 2) ** 2;
+    return 12742 * Math.asin(Math.sqrt(x));
+  }
+  function byDistance(lat: number, lng: number) {
+    const l = cards().map(c => {
+      const d = c.dataset.lat ? km(lat, lng, +c.dataset.lat!, +c.dataset.lng!) : 9999;
+      const el = c.querySelector(".pg-dist")!;
+      el.textContent = d < 9999 ? (d < 1 ? `${Math.round(d * 1000)}m` : `${d.toFixed(1)}km`) : "";
+      return { c, d };
+    }).sort((a, b) => a.d - b.d).map(x => x.c);
+    place(l);
+    note.textContent = "지금 계신 곳에서 가까운 순입니다";
+  }
+
+  const isPhone = matchMedia("(pointer: coarse)").matches;
+  const ask = document.getElementById("loc-ask")!;
+  shuffle();
+  if (isPhone && navigator.geolocation) {
+    let saved: string | null = null;
+    try { saved = sessionStorage.getItem("pg-loc"); } catch {}
+    if (saved !== "no") ask.hidden = false;
+  }
+  document.getElementById("loc-yes")!.addEventListener("click", () => {
+    ask.hidden = true;
+    navigator.geolocation.getCurrentPosition(
+      p => byDistance(p.coords.latitude, p.coords.longitude),
+      () => { note.textContent = "위치를 확인하지 못해 섞어서 보여 드립니다"; },
+      { enableHighAccuracy: false, timeout: 8000, maximumAge: 600000 }
+    );
   });
+  document.getElementById("loc-no")!.addEventListener("click", () => {
+    ask.hidden = true;
+    try { sessionStorage.setItem("pg-loc", "no"); } catch {}
+  });
+
+  document.querySelectorAll<HTMLButtonElement>(".pg-cats button").forEach(b =>
+    b.addEventListener("click", () => {
+      document.querySelectorAll(".pg-cats button").forEach(x => x.classList.remove("on"));
+      b.classList.add("on");
+      const c = b.dataset.cat;
+      cards().forEach(el => el.classList.toggle("pg-hide", c !== "전체" && el.dataset.cat !== c));
+    })
+  );
 </script>
