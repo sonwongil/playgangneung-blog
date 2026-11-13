@@ -90,7 +90,7 @@
 
 <section class="card">
   <h2><span class="n">3</span>영상·사진 올리기</h2>
-  <p class="desc">칸마다 눌러서 찍거나 고르시면 됩니다. <b class="req">필수</b> 표시 칸은 꼭 채워 주세요.</p>
+  <p class="desc">칸마다 눌러서 갤러리(앨범)에서 고르시거나 바로 찍으시면 됩니다. <b class="req">필수</b> 표시 칸은 꼭 채워 주세요.</p>
   <div id="slots"></div>
   <button class="btn add" id="addPhoto">＋ 사진 칸 추가</button>
 </section>
@@ -149,8 +149,8 @@ $('rec').onclick=async()=>{
 
 const slots=[];
 const SLOT_DEF=[
-  {kind:'video',title:'영상 1 · 인사 영상',guide:'카메라 앞에서 "안녕하세요, ○○ 사장 ○○○입니다" 하고 인사해 주세요. 5~10초면 충분합니다.',req:true,capture:'user'},
-  {kind:'video',title:'영상 2 · 가게 전경·주변',guide:'가게 간판과 외관, 주변 거리나 바다 등 가게 가는 길 풍경을 천천히 찍어 주세요.',req:true,capture:'environment'},
+  {kind:'video',title:'영상 1 · 인사 영상',guide:'카메라 앞에서 "안녕하세요, ○○ 사장 ○○○입니다" 하고 인사해 주세요. 5~10초면 충분합니다.',req:true},
+  {kind:'video',title:'영상 2 · 가게 전경·주변',guide:'가게 간판과 외관, 주변 거리나 바다 등 가게 가는 길 풍경을 천천히 찍어 주세요.',req:true},
   {kind:'photo',title:'사진 1 · 메뉴',req:true},
   {kind:'photo',title:'사진 2 · 메뉴',req:false},
 ];
@@ -165,7 +165,7 @@ function addSlot(def){
     ${o.guide?`<div class="gd">${o.guide}</div>`:''}
     ${o.kind==='photo'?'<input type="text" placeholder="무엇인가요? (예: 모둠회 대 / 물회)">':''}</div>
     ${o.req?'':'<button class="x" title="칸 빼기">✕</button>'}
-    <input type="file" accept="${accept}" class="hidden" ${o.capture?`capture="${o.capture}"`:''}>`;
+    <input type="file" accept="${accept}" class="hidden">`;
   const fi=el.querySelector('input[type=file]'), pv=el.querySelector('.pv');
   pv.onclick=()=>fi.click();
   fi.onchange=()=>{const f=fi.files[0]; if(!f)return; o.file=f; const u=URL.createObjectURL(f);
