@@ -172,7 +172,7 @@ function addSlot(def){
   el.innerHTML=`<div class="pv">${o.kind==='video'?'🎥':'📷'}</div>
     <div class="tx"><div class="tt">${o.title} ${o.req?'<span class="req">필수</span>':''}</div>
     ${o.guide?`<div class="gd">${o.guide}</div>`:''}
-    ${o.kind==='photo'?'<input type="text" placeholder="무엇인가요? (예: 모둠회 대 / 물회)">':''}</div>
+    ${o.kind==='photo'?`<input type="text" placeholder="${KIND==='spot'?'무엇인가요? (예: 활어 코너 / 건어물 골목)':'무엇인가요? (예: 모둠회 대 / 물회)'}">`:''}</div>
     ${o.req?'':'<button class="x" title="칸 빼기">✕</button>'}
     <input type="file" accept="${accept}" class="hidden">`;
   const fi=el.querySelector('input[type=file]'), pv=el.querySelector('.pv');
@@ -192,7 +192,7 @@ const SPOT_DEF=[
 function setKind(k){
   KIND=k; $('slots').innerHTML=''; slots.length=0; photoNo=0;
   if(k==='spot'){
-    $('htitle').textContent='플레이강릉 · 명소 자료 올리기'; $('hsub').textContent='명소·관광 자원 소개 영상용 화면입니다';
+    $('htitle').textContent='플레이강릉 · 명소 자료 올리기'; document.title='명소 자료 올리기 | 플레이강릉'; $('hsub').textContent='명소·관광 자원 소개 영상용 화면입니다';
     $('t1').textContent='명소 정보'; $('d1').textContent='이번 영상의 주제와 소개할 내용을 적어 주세요. 소개는 AI 목소리로 읽습니다.';
     $('lshop').textContent='명소 이름'; $('shopOnly').classList.add('hidden'); $('spotOnly').classList.remove('hidden');
     $('voiceCard').classList.add('hidden');
